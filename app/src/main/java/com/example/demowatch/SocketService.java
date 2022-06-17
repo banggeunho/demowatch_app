@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
@@ -61,53 +62,55 @@ public class SocketService {
 //        });
 //    }
 
-static class SocketThread extends Thread{
+    static class SocketThread extends Thread{
 
-    String host; // 서버 IP
-    int port; // 서버 port
+        String host; // 서버 IP
+        int port; // 서버 port
+        static Socket socket;
 
-    public SocketThread(String host, String port){
-        this.host = host;
-        this.port = Integer.parseInt(port);
-    }
-
-
-    @Override
-    public void run() {
-        try{
-            Socket socket = new Socket(host, port); // 소켓 열어주기
-            sendWriter = new PrintWriter(socket.getOutputStream());
-            sendData("test");
-//                socket.close(); // 소켓 해제
-
-        }catch(Exception e){
-            e.printStackTrace();
+        public SocketThread(String host, String port){
+            this.host = host;
+            this.port = Integer.parseInt(port);
         }
-    }
 
-}
 
-public static void sendData(String sendmsg) {
-    if(sendWriter == null) return;
-    new Thread() {
         @Override
         public void run() {
-            super.run();
-            try {
-                if (sendmsg == null) {
-                    sendWriter.println(deviceName);
-                } else if (sendmsg.startsWith("Stop")) {
-                    isConnected = false;
-                    sendWriter.println("Stop");
-                } else {
-                    sendWriter.println(deviceName + "+" + sendmsg);
-                }
-                sendWriter.flush();
-            } catch (Exception e) {
+            try{
+                socket = new Socket(host, port); // 소켓 열어주기
+                sendWriter = new PrintWriter(socket.getOutputStream());
+                sendData("test");
+    //                socket.close(); // 소켓 해제
+
+            }catch(Exception e){
                 e.printStackTrace();
             }
         }
-    }.start();
-}
+
+    }
+
+    public static void sendData(String sendmsg) {
+        if(sendWriter == null) return;
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                try {
+                    if (sendmsg == null) {
+                        sendWriter.println(deviceName);
+                    } else if (sendmsg.startsWith("Stop")) {
+                        isConnected = false;
+                        sendWriter.println("Stop");
+                    } else {
+                        sendWriter.println(deviceName + "+" + sendmsg);
+                    }
+                    sendWriter.flush();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+    }
+
 }
 

@@ -21,6 +21,7 @@ import android.widget.TextView;
 
 import com.example.demowatch.R;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener  {
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public String fileName;
     private int fileVer;
 
+    public SocketService.SocketThread thread;
     public static boolean isConnected = false;
     public String addr;
     public String port;
@@ -162,15 +164,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         startBtn.setClickable(false);
         stopBtn.setClickable(true);
 
-        if(!isConnected) {
-            SocketService.SocketThread thread = new SocketService.SocketThread(addr, port);
-            if (thread != null) {
-                thread.start();
-                isConnected = true;
-                socketState.setText("Socket : Connect");
-                Log.d("Socket", "Connect");
-                Log.d("Socket", addr + " " + port);
-            }
+        thread = new SocketService.SocketThread(addr, port);
+        if (thread != null) {
+            thread.start();
+            isConnected = true;
+            socketState.setText("Socket : Connect");
+            Log.d("Socket", "Connect");
+            Log.d("Socket", addr + " " + port);
         }
     }
 
@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         if (sensor.getType() == Sensor.TYPE_HEART_RATE) {
 //            sensorData.add(tag+"+"+"HR+"+time+"+"+event.values[0]);
-            SocketService.sendData("HR+"+time+"+"+event.values[0]);
+            SocketService.sendData("HeartR+"+time+"+"+event.values[0]);
         }
 
         if (sensor.getType() == Sensor.TYPE_GYROSCOPE) {
@@ -234,7 +234,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         if (sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
 //            sensorData.add(tag+"+"+"SC+"+time+"+"+event.values[0]);
-            SocketService.sendData("SC+"+time+"+"+event.values[0]);
+            SocketService.sendData("StepC+"+time+"+"+event.values[0]);
         }
     }
 
@@ -246,7 +246,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     public void onResume() {
         super.onResume();
-
     }
 
     @Override
@@ -259,5 +258,15 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 //            timeT = null;
 //        }
     }
+
+//    @Override
+//    public void onStop() {
+//        super.onStop();
+//        try {
+//            SocketService.SocketThread.socket.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }

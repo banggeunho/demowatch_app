@@ -25,7 +25,7 @@
             android:id="@+id/portInput"
             android:layout_width="170dp"
             android:layout_height="wrap_content"
-            android:text="5001"
+            android:text="5002"
             android:textSize="20dp"
             android:layout_marginTop="10dp"
             android:layout_gravity="center_horizontal"/>
